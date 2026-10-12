@@ -1,0 +1,15 @@
+type Query {
+    thaiAddress(
+        postcode: String! @doc(description: "Five-digit Thai postal code.")
+    ): [ThaiAddressMatch!] @resolver(class: "Peerapatfc\\ThaiAddress\\Model\\Resolver\\ThaiAddress") @doc(description: "Provinces, districts and sub-districts that use a Thai postal code. Empty when the code does not exist.")
+}
+
+type ThaiAddressMatch @doc(description: "One sub-district that uses the postal code.") {
+    postcode: String! @doc(description: "The postal code.")
+    province_code: Int! @doc(description: "Official province code (10 is Bangkok).")
+    province_name_th: String! @doc(description: "Province name in Thai.")
+    province_name_en: String! @doc(description: "Province name in English.")
+    district: String! @doc(description: "District (amphoe or khet) in Thai.")
+    subdistrict: String! @doc(description: "Sub-district (tambon or khwaeng) in Thai.")
+    region_id: Int @doc(description: "Magento region id of the province, once the regions are installed.")
+}

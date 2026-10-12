@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Peerapatfc\ThaiAddress\Api\AddressLookupInterface" type="Peerapatfc\ThaiAddress\Model\AddressLookup"/>
+    <preference for="Peerapatfc\ThaiAddress\Api\Data\AddressMatchInterface" type="Peerapatfc\ThaiAddress\Model\AddressMatch"/>
+
+    <type name="Magento\Checkout\Api\ShippingInformationManagementInterface">
+        <plugin name="peerapatfc_thai_address_validate" type="Peerapatfc\ThaiAddress\Plugin\ValidateThaiAddress"/>
+    </type>
+    <type name="Magento\Checkout\Api\GuestShippingInformationManagementInterface">
+        <plugin name="peerapatfc_thai_address_validate" type="Peerapatfc\ThaiAddress\Plugin\ValidateThaiAddress"/>
+    </type>
+</config>
