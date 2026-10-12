@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.2 - 2026-10-12
+
+- With one street line there is no second line to hold the sub-district: the sub-district drop-down is no longer
+  added then (the district drop-down stays), and the postal code autocomplete no longer waits for it.
+- The second street line is reset to the sub-district drop-down's value when the country becomes Thailand, so a value
+  left there by a saved address is not sent. The name is cleared when the country changes away from Thailand.
+- With one street line the server ignores a leftover second street line (from a saved address) instead of checking
+  it as a sub-district.
+- The datalist suggestions of 0.2.0, unreachable since 0.3.0, are removed.
+- 77 unit tests.
+
 ## 0.3.1 - 2026-10-12
 
 - The drop-downs show one language: Thai names in a Thai store view, English names otherwise, each sorted in its

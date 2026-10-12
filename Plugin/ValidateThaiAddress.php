@@ -69,7 +69,9 @@ class ValidateThaiAddress
             $address->getRegionId(),
             $address->getRegion(),
             $address->getCity(),
-            $address->getStreet()[1] ?? null
+            // The sub-district lives in the second street line, which only exists with 2 or more street lines;
+            // a store with one line can still receive a leftover second line from a saved address.
+            $this->config->getStreetLines() >= 2 ? ($address->getStreet()[1] ?? null) : null
         );
         if ($error !== null) {
             throw new InputException($error);

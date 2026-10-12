@@ -18,6 +18,7 @@ class ValidateThaiAddressTest extends TestCase
 {
     private AddressValidator&MockObject $validator;
     private Config&MockObject $config;
+    private int $streetLines = 2;
     private ValidateThaiAddress $plugin;
 
     protected function setUp(): void
@@ -25,6 +26,7 @@ class ValidateThaiAddressTest extends TestCase
         $this->validator = $this->createMock(AddressValidator::class);
         $this->config = $this->createMock(Config::class);
         $this->config->method('isValidationEnabled')->willReturn(true);
+        $this->config->method('getStreetLines')->willReturn($this->streetLines);
         $this->plugin = new ValidateThaiAddress($this->validator, $this->config);
     }
 
@@ -61,6 +63,20 @@ class ValidateThaiAddressTest extends TestCase
         );
 
         $this->assertNull($result);
+    }
+
+    public function testWithOneStreetLineALeftoverSecondLineIsNotChecked(): void
+    {
+        $this->streetLines = 1;
+        $this->setUp();
+        $this->validator->expects($this->once())->method('validate')
+            ->with('10110', 700, 'Bangkok', 'คลองเตย', null)->willReturn(null);
+
+        $this->plugin->beforeSaveAddressInformation(
+            $this->createMock(ShippingInformationManagementInterface::class),
+            '1',
+            $this->information($this->address('TH'))
+        );
     }
 
     public function testARejectedThaiAddressStopsTheCheckoutWithTheReason(): void

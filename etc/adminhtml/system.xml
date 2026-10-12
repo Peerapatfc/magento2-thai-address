@@ -26,7 +26,7 @@
                 <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Drop-downs and postal code autocomplete</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Luma checkout. For Thailand, City becomes a district drop-down and a sub-district drop-down is added (the second street line is hidden). The postal code fills the province, district and sub-district.</comment>
+                    <comment>Luma checkout. For Thailand, City becomes a district drop-down and a sub-district drop-down is added (the second street line is hidden). The postal code fills the province, district and sub-district. The sub-district is stored in the second street line, so with only one street line (Customers &gt; Customer Configuration &gt; Name and Address Options) there is no sub-district drop-down.</comment>
                 </field>
             </group>
         </section>

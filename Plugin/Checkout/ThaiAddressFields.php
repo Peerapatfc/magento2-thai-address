@@ -11,6 +11,9 @@ use Peerapatfc\ThaiAddress\Model\Config;
  * Turns City into a district drop-down for Thailand, adds a sub-district drop-down and puts the address fields
  * in the order a Thai address is written: country, province, district, sub-district, postal code.
  *
+ * The sub-district is stored in the second street line, so with a single street line there is no sub-district
+ * drop-down and only the district is a drop-down.
+ *
  * Applies to the shipping address and to every billing address form. Other countries keep a text input.
  */
 class ThaiAddressFields
@@ -81,6 +84,12 @@ class ThaiAddressFields
         $city['component'] = 'Peerapatfc_ThaiAddress/js/form/element/thai-district';
         $city['config']['elementTmpl'] = 'Peerapatfc_ThaiAddress/form/element/area';
 
+        if ($this->config->getStreetLines() < 2) {
+            $this->sort($fields);
+
+            return;
+        }
+
         $fields['thai_subdistrict'] = [
             'component' => 'Peerapatfc_ThaiAddress/js/form/element/thai-subdistrict',
             'config' => [
@@ -95,6 +104,17 @@ class ThaiAddressFields
             'validation' => ['required-entry' => false],
         ];
 
+        $this->sort($fields);
+    }
+
+    /**
+     * Puts the fields in the order of a Thai address.
+     *
+     * @param array $fields
+     * @return void
+     */
+    private function sort(array &$fields): void
+    {
         foreach (self::SORT_ORDER as $field => $sortOrder) {
             if (isset($fields[$field])) {
                 $fields[$field]['sortOrder'] = $sortOrder;

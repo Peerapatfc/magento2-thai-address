@@ -1,15 +1,14 @@
 /**
- * Fills province, district and sub-district from the Thai postal code, and suggests the district and
- * sub-district names that use it. Only acts when the country is Thailand and the code has 5 digits.
+ * Fills province, district and sub-district from the Thai postal code. Only acts when the country is
+ * Thailand and the code has 5 digits. The district and sub-district fields are the drop-downs of this module.
  */
 define([
     'underscore',
     'uiRegistry',
     'mage/storage',
     'Magento_Checkout/js/model/url-builder',
-    'Peerapatfc_ThaiAddress/js/model/suggestions',
     'Peerapatfc_ThaiAddress/js/model/language'
-], function (_, registry, storage, urlBuilder, suggestions, language) {
+], function (_, registry, storage, urlBuilder, language) {
     'use strict';
 
     var COUNTRY = 'TH',
@@ -51,8 +50,7 @@ define([
     return function (PostCode) {
         return PostCode.extend({
             defaults: {
-                thaiCountry: null,
-                autoFilled: {}
+                thaiCountry: null
             },
 
             /**
@@ -89,16 +87,7 @@ define([
             suggestThaiAddress: function (postcode) {
                 var self = this;
 
-                if (!this.isThaiAutocompleteOn()) {
-                    return;
-                }
-
-                if (this.thaiCountry !== COUNTRY || !/^\d{5}$/.test(postcode || '')) {
-                    this.withSiblings(function (city, street) {
-                        suggestions.clear(city.uid);
-                        suggestions.clear(street.uid);
-                    });
-
+                if (!this.isThaiAutocompleteOn() || this.thaiCountry !== COUNTRY || !/^\d{5}$/.test(postcode || '')) {
                     return;
                 }
 
@@ -111,96 +100,33 @@ define([
             },
 
             /**
-             * @param {Function} callback Gets the city and the second street line elements
-             */
-            withSiblings: function (callback) {
-                var parent = this.parentName;
-
-                registry.get([parent + '.city', parent + '.street.1'], callback);
-            },
-
-            /**
-             * Writes a value the customer did not type, unless the customer has since put their own there.
+             * Chooses the province, and the district and sub-district when the postal code settles them.
              *
-             * @param {Object} element
-             * @param {String} value
-             */
-            fill: function (element, value) {
-                var current = element.value(),
-                    last = this.autoFilled[element.name];
-
-                if (!current || current === last) {
-                    element.value(value);
-                    this.autoFilled[element.name] = value;
-                }
-            },
-
-            /**
              * @param {Array<Object>} matches Rows from GET /V1/thai-address/postcode/:postcode
              */
             apply: function (matches) {
-                var self = this,
-                    subdistrict = registry.get(this.parentName + '.thai_subdistrict'),
+                var parent = this.parentName,
                     regionIds = _.uniq(_.compact(_.pluck(matches, 'region_id'))),
-                    districts = _.uniq(_.pluck(matches, 'district'));
+                    district = function (row) {
+                        return language.pick(row.district, row['district_en']);
+                    },
+                    districts = _.uniq(_.map(matches, district));
 
                 if (!matches.length) {
                     return;
                 }
 
                 if (regionIds.length === 1) {
-                    registry.get(this.parentName + '.region_id', function (region) {
+                    registry.get(parent + '.region_id', function (region) {
                         region.value(String(regionIds[0]));
                     });
                 }
 
-                if (subdistrict && subdistrict.isThaiCountry()) {
-                    this.applyToDropdowns(matches, subdistrict);
-
-                    return;
-                }
-
-                this.withSiblings(function (city, street) {
-                    var chosen = _.find(districts, function (district) {
-                            return normalize(district) === normalize(city.value());
-                        }) || (districts.length === 1 ? districts[0] : null),
-                        rows = chosen ?
-                            _.filter(matches, function (row) {
-                                return row.district === chosen;
-                            }) :
-                            matches,
-                        subdistricts = _.uniq(_.pluck(rows, 'subdistrict'));
-
-                    if (districts.length === 1) {
-                        self.fill(city, districts[0]);
-                    }
-
-                    if (chosen && subdistricts.length === 1) {
-                        self.fill(street, subdistricts[0]);
-                    }
-
-                    suggestions.set(city.uid, districts);
-                    suggestions.set(street.uid, subdistricts);
-                });
-            },
-
-            /**
-             * With the drop-downs on, only choose what the postal code settles; the options come from the
-             * drop-downs themselves.
-             *
-             * @param {Array<Object>} matches
-             * @param {Object} subdistrict The sub-district drop-down
-             */
-            applyToDropdowns: function (matches, subdistrict) {
-                var district = function (row) {
-                        return language.pick(row.district, row['district_en']);
-                    },
-                    districts = _.uniq(_.map(matches, district));
-
-                registry.get(this.parentName + '.city', function (city) {
+                registry.get(parent + '.city', function (city) {
                     var chosen = _.find(districts, function (name) {
                             return normalize(name) === normalize(city.value());
                         }) || (districts.length === 1 ? districts[0] : null),
+                        subdistrict = registry.get(parent + '.thai_subdistrict'),
                         names;
 
                     if (!chosen) {
@@ -208,6 +134,12 @@ define([
                     }
 
                     city.value(chosen);
+
+                    // Without a second street line there is no sub-district field.
+                    if (!subdistrict) {
+                        return;
+                    }
+
                     names = _.uniq(_.map(_.filter(matches, function (row) {
                         return district(row) === chosen;
                     }), function (row) {

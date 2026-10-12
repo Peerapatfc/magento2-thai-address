@@ -10,6 +10,7 @@ use Magento\Store\Model\ScopeInterface;
 class Config
 {
     private const XML_PATH_ENABLED = 'thai_address/validation/enabled';
+    private const XML_PATH_STREET_LINES = 'customer/address/street_lines';
     private const XML_PATH_AUTOCOMPLETE = 'thai_address/autocomplete/enabled';
     private const XML_PATH_LEVEL = 'thai_address/validation/level';
 
@@ -72,5 +73,18 @@ class Config
         $locale = (string)$this->scopeConfig->getValue('general/locale/code', ScopeInterface::SCOPE_STORE, $storeId);
 
         return str_starts_with($locale, 'th') ? 'th' : 'en';
+    }
+
+    /**
+     * How many street lines the address form has (Stores > Configuration > Customers > Customer Configuration).
+     *
+     * @param int|string|null $storeId
+     * @return int
+     */
+    public function getStreetLines(int|string|null $storeId = null): int
+    {
+        $lines = (int)$this->scopeConfig->getValue(self::XML_PATH_STREET_LINES, ScopeInterface::SCOPE_STORE, $storeId);
+
+        return $lines > 0 ? $lines : 2;
     }
 }

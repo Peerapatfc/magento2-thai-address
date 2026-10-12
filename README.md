@@ -18,7 +18,10 @@ the province into a free text box and nothing checks it. This module fixes that.
   sub-district, postal code. Choosing a province lists its districts, choosing a district lists its sub-districts (in
   Thai alphabetical order) and choosing a sub-district fills the postal code. Typing the postal code first still
   works: it selects the province and fills the district and sub-district when only one fits. Other countries keep the
-  normal text fields. The names are in **one language at a time**: Thai in a store view with a Thai locale (`th_TH`),
+  normal text fields. **The sub-district is stored in the second street line, so the store needs at least 2 street
+  lines** (Stores > Configuration > Customers > Customer Configuration > Name and Address Options > Number of Lines in a
+  Street Address, default 2). With 1 line only the district is a drop-down and the sub-district is not asked for or
+  checked. The names are in **one language at a time**: Thai in a store view with a Thai locale (`th_TH`),
   English in any other, each sorted in its own alphabet. The stored value is the name shown, and the checkout
   validation accepts both the Thai and the English name.
 - **Admin settings** for the strictness level and the autocomplete (Stores > Configuration > General > Thai Address).
@@ -183,7 +186,7 @@ bash dev/install.sh
 Then:
 
 ```bash
-# unit tests (71)
+# unit tests (77)
 docker compose -f dev/docker-compose.yml exec -T php bash -lc \
   'cd /var/www/html/dev/tests/unit && ../../../vendor/bin/phpunit -c phpunit.xml.dist /module/Test/Unit'
 

@@ -41,10 +41,12 @@ define([
         },
 
         /**
-         * Shown and required for Thailand only; the second street line is hidden then.
+         * Shown and required for Thailand only; the second street line is hidden then. The drop-down is the
+         * source of truth for that line, so anything left in it (a saved address, an earlier country) is replaced.
          */
         onCountryChange: function () {
-            var thai = this.isThaiCountry();
+            var self = this,
+                thai = this.isThaiCountry();
 
             this.visible(thai);
             this.required(thai);
@@ -52,6 +54,12 @@ define([
 
             registry.get(this.parentName + '.street.1', function (street) {
                 street.visible(!thai);
+
+                if (thai) {
+                    street.value(self.value() || '');
+                } else if (street.value() === self.value()) {
+                    street.value(''); // The name this drop-down wrote there is not a street line.
+                }
             });
         },
 
