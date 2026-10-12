@@ -183,6 +183,9 @@ node scripts/build-addresses.mjs geography.json <upstream-commit-sha>
 bash dev/install.sh
 ```
 
+A test customer with two saved Thai addresses (for trying the logged-in checkout and the address book) comes from
+`bash dev/seed-customer.sh`. It is for the local store only; the login is in the script.
+
 Then:
 
 ```bash
