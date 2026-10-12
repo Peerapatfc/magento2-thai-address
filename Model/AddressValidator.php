@@ -102,7 +102,7 @@ class AddressValidator
         if ($district !== '') {
             $rows = array_values(array_filter(
                 $rows,
-                fn (array $row): bool => $this->areaMatcher->matches($district, $row['district'])
+                fn (array $row): bool => $this->areaMatcher->matches($district, $row['district'], $row['district_en'])
             ));
             if ($rows === []) {
                 return __('District "%1" is not in postal code %2.', $district, $postcode);
@@ -111,7 +111,7 @@ class AddressValidator
 
         if ($subdistrict !== '') {
             foreach ($rows as $row) {
-                if ($this->areaMatcher->matches($subdistrict, $row['subdistrict'])) {
+                if ($this->areaMatcher->matches($subdistrict, $row['subdistrict'], $row['subdistrict_en'])) {
                     return null;
                 }
             }

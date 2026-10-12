@@ -58,4 +58,17 @@ class AreaNameMatcherTest extends TestCase
     {
         $this->assertSame('อุทัย', $this->matcher->normalize('อุทัย'));
     }
+
+    public function testTheEnglishNameMatchesIgnoringCaseAndSpaces(): void
+    {
+        $this->assertTrue($this->matcher->matches('Bang Rak', 'บางรัก', 'Bang Rak'));
+        $this->assertTrue($this->matcher->matches('bangrak', 'บางรัก', 'Bang Rak'));
+        $this->assertTrue($this->matcher->matches("Ko Samui", 'เกาะสมุย', 'Ko Samui'));
+        $this->assertFalse($this->matcher->matches('Si Lom', 'บางรัก', 'Bang Rak'));
+    }
+
+    public function testTheEnglishNameIsNotUsedUnlessGiven(): void
+    {
+        $this->assertFalse($this->matcher->matches('Bang Rak', 'บางรัก'));
+    }
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 - 2026-10-12
+
+- The drop-downs show one language: Thai names in a Thai store view, English names otherwise, each sorted in its
+  own alphabet (they showed both before).
+- District and sub-district validation also accepts the English names.
+- 71 unit tests.
+
 ## 0.3.0 - 2026-10-12
 
 - Luma checkout for Thailand: City becomes a district drop-down and a sub-district drop-down replaces the second

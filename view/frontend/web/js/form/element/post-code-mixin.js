@@ -7,8 +7,9 @@ define([
     'uiRegistry',
     'mage/storage',
     'Magento_Checkout/js/model/url-builder',
-    'Peerapatfc_ThaiAddress/js/model/suggestions'
-], function (_, registry, storage, urlBuilder, suggestions) {
+    'Peerapatfc_ThaiAddress/js/model/suggestions',
+    'Peerapatfc_ThaiAddress/js/model/language'
+], function (_, registry, storage, urlBuilder, suggestions, language) {
     'use strict';
 
     var COUNTRY = 'TH',
@@ -191,11 +192,14 @@ define([
              * @param {Object} subdistrict The sub-district drop-down
              */
             applyToDropdowns: function (matches, subdistrict) {
-                var districts = _.uniq(_.pluck(matches, 'district'));
+                var district = function (row) {
+                        return language.pick(row.district, row['district_en']);
+                    },
+                    districts = _.uniq(_.map(matches, district));
 
                 registry.get(this.parentName + '.city', function (city) {
-                    var chosen = _.find(districts, function (district) {
-                            return normalize(district) === normalize(city.value());
+                    var chosen = _.find(districts, function (name) {
+                            return normalize(name) === normalize(city.value());
                         }) || (districts.length === 1 ? districts[0] : null),
                         names;
 
@@ -204,7 +208,11 @@ define([
                     }
 
                     city.value(chosen);
-                    names = _.uniq(_.pluck(_.where(matches, {district: chosen}), 'subdistrict'));
+                    names = _.uniq(_.map(_.filter(matches, function (row) {
+                        return district(row) === chosen;
+                    }), function (row) {
+                        return language.pick(row.subdistrict, row['subdistrict_en']);
+                    }));
 
                     if (names.length === 1) {
                         subdistrict.value(names[0]);

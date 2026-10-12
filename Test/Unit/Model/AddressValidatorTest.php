@@ -128,6 +128,20 @@ class AddressValidatorTest extends TestCase
         $this->assertNull($validator->validate('10500', self::BANGKOK_REGION_ID, null, 'เขตบางรัก', 'แขวงสีลม'));
     }
 
+    public function testTheAddressLevelAcceptsEnglishNames(): void
+    {
+        $this->assertNull(
+            $this->addressLevelValidator()->validate('10500', self::BANGKOK_REGION_ID, null, 'Bang Rak', 'Si Lom')
+        );
+    }
+
+    public function testTheAddressLevelRejectsAWrongEnglishDistrict(): void
+    {
+        $this->assertNotNull(
+            $this->addressLevelValidator()->validate('10500', self::BANGKOK_REGION_ID, null, 'Huai Khwang', null)
+        );
+    }
+
     public function testTheAddressLevelRejectsAWrongDistrict(): void
     {
         $error = $this->addressLevelValidator()->validate('10500', self::BANGKOK_REGION_ID, null, 'ห้วยขวาง', null);

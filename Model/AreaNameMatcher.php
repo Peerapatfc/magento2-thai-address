@@ -19,13 +19,18 @@ class AreaNameMatcher
      *
      * @param string $input What the customer typed
      * @param string $official Name from the dataset
+     * @param string|null $officialEn The English name from the dataset, accepted too
      * @return bool
      */
-    public function matches(string $input, string $official): bool
+    public function matches(string $input, string $official, ?string $officialEn = null): bool
     {
         $needle = $this->normalize($input);
+        if ($needle === '') {
+            return false;
+        }
 
-        return $needle !== '' && $needle === $this->normalize($official);
+        return $needle === $this->normalize($official)
+            || ($officialEn !== null && $needle === $this->normalize($officialEn));
     }
 
     /**
@@ -40,6 +45,6 @@ class AreaNameMatcher
         $text = (string)preg_replace(self::PREFIX, '', $text);
         $text = (string)preg_replace('/[\x{0E48}-\x{0E4B}]/u', '', $text); // tone marks
 
-        return (string)preg_replace('/[\s.\-ฯ]/u', '', $text);
+        return (string)preg_replace('/[\s.\-ฯ\'’(),]/u', '', $text);
     }
 }

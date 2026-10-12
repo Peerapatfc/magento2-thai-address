@@ -60,4 +60,17 @@ class Config
     {
         return $this->scopeConfig->isSetFlag(self::XML_PATH_AUTOCOMPLETE, ScopeInterface::SCOPE_STORE, $storeId);
     }
+
+    /**
+     * Language of the drop-down names: "th" for a Thai store view, "en" otherwise.
+     *
+     * @param int|string|null $storeId
+     * @return string
+     */
+    public function getLanguage(int|string|null $storeId = null): string
+    {
+        $locale = (string)$this->scopeConfig->getValue('general/locale/code', ScopeInterface::SCOPE_STORE, $storeId);
+
+        return str_starts_with($locale, 'th') ? 'th' : 'en';
+    }
 }

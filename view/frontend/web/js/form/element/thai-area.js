@@ -6,8 +6,9 @@
 define([
     'ko',
     'underscore',
-    'Magento_Ui/js/form/element/abstract'
-], function (ko, _, Abstract) {
+    'Magento_Ui/js/form/element/abstract',
+    'Peerapatfc_ThaiAddress/js/model/language'
+], function (ko, _, Abstract, language) {
     'use strict';
 
     var COUNTRY = 'TH';
@@ -45,19 +46,21 @@ define([
         },
 
         /**
-         * Turns API rows into drop-down options. The label shows both names.
+         * Turns API rows into drop-down options, named in the language of the store view and sorted in it
+         * (the API sorts in Thai).
          *
          * @param {Array} rows
          * @return {Array}
          */
         toOptions: function (rows) {
-            return _.map(rows, function (row) {
-                return {
-                    value: row['name_th'],
-                    label: row['name_th'] + ' (' + row['name_en'] + ')',
-                    code: row.code,
-                    postcode: row.postcode
-                };
+            var options = _.map(rows, function (row) {
+                var name = language.pick(row['name_th'], row['name_en']);
+
+                return {value: name, label: name, code: row.code, postcode: row.postcode};
+            });
+
+            return language.isThai ? options : options.sort(function (a, b) {
+                return a.label.localeCompare(b.label, 'en');
             });
         },
 

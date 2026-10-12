@@ -23,6 +23,11 @@ class CheckoutConfigProvider implements ConfigProviderInterface
      */
     public function getConfig(): array
     {
-        return ['thaiAddress' => ['autocomplete' => $this->config->isAutocompleteEnabled()]];
+        return [
+            'thaiAddress' => [
+                'autocomplete' => $this->config->isAutocompleteEnabled(),
+                'language' => $this->config->getLanguage(),
+            ],
+        ];
     }
 }
