@@ -9,7 +9,11 @@ type ThaiAddressMatch @doc(description: "One sub-district that uses the postal c
     province_code: Int! @doc(description: "Official province code (10 is Bangkok).")
     province_name_th: String! @doc(description: "Province name in Thai.")
     province_name_en: String! @doc(description: "Province name in English.")
+    district_code: Int! @doc(description: "Official 4-digit district code.")
     district: String! @doc(description: "District (amphoe or khet) in Thai.")
+    district_en: String! @doc(description: "District name in English.")
+    subdistrict_code: Int! @doc(description: "Official 6-digit sub-district code.")
     subdistrict: String! @doc(description: "Sub-district (tambon or khwaeng) in Thai.")
+    subdistrict_en: String! @doc(description: "Sub-district name in English.")
     region_id: Int @doc(description: "Magento region id of the province, once the regions are installed.")
 }

@@ -15,8 +15,12 @@ interface AddressMatchInterface
     public const PROVINCE_CODE = 'province_code';
     public const PROVINCE_NAME_TH = 'province_name_th';
     public const PROVINCE_NAME_EN = 'province_name_en';
+    public const DISTRICT_CODE = 'district_code';
     public const DISTRICT = 'district';
+    public const DISTRICT_EN = 'district_en';
+    public const SUBDISTRICT_CODE = 'subdistrict_code';
     public const SUBDISTRICT = 'subdistrict';
+    public const SUBDISTRICT_EN = 'subdistrict_en';
     public const REGION_ID = 'region_id';
 
     /**
@@ -80,6 +84,21 @@ interface AddressMatchInterface
     public function setProvinceNameEn(string $name): self;
 
     /**
+     * Official 4-digit district code (1001 = Phra Nakhon).
+     *
+     * @return int
+     */
+    public function getDistrictCode(): int;
+
+    /**
+     * Sets: official 4-digit district code (1001 = Phra Nakhon).
+     *
+     * @param int $code
+     * @return $this
+     */
+    public function setDistrictCode(int $code): self;
+
+    /**
      * District (amphoe / khet), in Thai.
      *
      * @return string
@@ -95,6 +114,36 @@ interface AddressMatchInterface
     public function setDistrict(string $district): self;
 
     /**
+     * District name in English.
+     *
+     * @return string
+     */
+    public function getDistrictEn(): string;
+
+    /**
+     * Sets: district name in English.
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function setDistrictEn(string $name): self;
+
+    /**
+     * Official 6-digit sub-district code (100101 = Phra Borom Maha Ratchawang).
+     *
+     * @return int
+     */
+    public function getSubdistrictCode(): int;
+
+    /**
+     * Sets: official 6-digit sub-district code (100101 = Phra Borom Maha Ratchawang).
+     *
+     * @param int $code
+     * @return $this
+     */
+    public function setSubdistrictCode(int $code): self;
+
+    /**
      * Sub-district (tambon / khwaeng), in Thai.
      *
      * @return string
@@ -108,6 +157,21 @@ interface AddressMatchInterface
      * @return $this
      */
     public function setSubdistrict(string $subdistrict): self;
+
+    /**
+     * Sub-district name in English.
+     *
+     * @return string
+     */
+    public function getSubdistrictEn(): string;
+
+    /**
+     * Sets: sub-district name in English.
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function setSubdistrictEn(string $name): self;
 
     /**
      * Magento region id of the province, when the regions have been installed.

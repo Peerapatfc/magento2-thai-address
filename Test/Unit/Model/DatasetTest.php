@@ -54,4 +54,35 @@ class DatasetTest extends TestCase
             }
         }
     }
+
+    public function testRowsCarryOfficialCodesAndEnglishNames(): void
+    {
+        $rows = array_values(array_filter(
+            $this->dataset->findByPostcode('10500'),
+            static fn (array $row): bool => $row['subdistrict'] === 'สีลม'
+        ));
+
+        $this->assertCount(1, $rows);
+        $this->assertSame(10, $rows[0]['province_code']);
+        $this->assertSame(1004, $rows[0]['district_code']);
+        $this->assertSame('บางรัก', $rows[0]['district']);
+        $this->assertSame('Bang Rak', $rows[0]['district_en']);
+        $this->assertSame(100402, $rows[0]['subdistrict_code']);
+        $this->assertSame('Si Lom', $rows[0]['subdistrict_en']);
+    }
+
+    public function testCodesAreConsistentForEveryRow(): void
+    {
+        $provinces = $this->dataset->getProvinces();
+
+        foreach (['10110', '50200', '83000', '94000', '40000', '55130'] as $postcode) {
+            foreach ($this->dataset->findByPostcode($postcode) as $row) {
+                $this->assertSame($row['province_code'], intdiv($row['district_code'], 100), $postcode);
+                $this->assertSame($row['district_code'], intdiv($row['subdistrict_code'], 100), $postcode);
+                $this->assertArrayHasKey($row['province_code'], $provinces);
+                $this->assertNotSame('', $row['district_en']);
+                $this->assertNotSame('', $row['subdistrict_en']);
+            }
+        }
+    }
 }

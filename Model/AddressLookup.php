@@ -41,8 +41,12 @@ class AddressLookup implements AddressLookupInterface
                 ->setProvinceCode($row['province_code'])
                 ->setProvinceNameTh($names['th'])
                 ->setProvinceNameEn($names['en'])
+                ->setDistrictCode($row['district_code'])
                 ->setDistrict($row['district'])
+                ->setDistrictEn($row['district_en'])
+                ->setSubdistrictCode($row['subdistrict_code'])
                 ->setSubdistrict($row['subdistrict'])
+                ->setSubdistrictEn($row['subdistrict_en'])
                 ->setRegionId($this->regionResolver->getRegionId($row['province_code']));
         }
 

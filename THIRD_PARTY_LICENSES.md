@@ -2,7 +2,7 @@
 
 ## thailand-geography-json
 
-`data/thai-addresses.json` is derived from https://github.com/thailand-geography-data/thailand-geography-json
+`data/thai-addresses.json` is derived from https://github.com/thailand-geography-data/thailand-geography-json (`src/geography.json`; the upstream commit is recorded in the file's `source` field)
 
 MIT License
 

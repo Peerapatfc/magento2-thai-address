@@ -76,6 +76,22 @@ class AddressMatch extends DataObject implements AddressMatchInterface
     /**
      * @inheritdoc
      */
+    public function getDistrictCode(): int
+    {
+        return (int)$this->getData(self::DISTRICT_CODE);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDistrictCode(int $value): AddressMatchInterface
+    {
+        return $this->setData(self::DISTRICT_CODE, $value);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getDistrict(): string
     {
         return (string)$this->getData(self::DISTRICT);
@@ -92,6 +108,38 @@ class AddressMatch extends DataObject implements AddressMatchInterface
     /**
      * @inheritdoc
      */
+    public function getDistrictEn(): string
+    {
+        return (string)$this->getData(self::DISTRICT_EN);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDistrictEn(string $value): AddressMatchInterface
+    {
+        return $this->setData(self::DISTRICT_EN, $value);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSubdistrictCode(): int
+    {
+        return (int)$this->getData(self::SUBDISTRICT_CODE);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSubdistrictCode(int $value): AddressMatchInterface
+    {
+        return $this->setData(self::SUBDISTRICT_CODE, $value);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getSubdistrict(): string
     {
         return (string)$this->getData(self::SUBDISTRICT);
@@ -103,6 +151,22 @@ class AddressMatch extends DataObject implements AddressMatchInterface
     public function setSubdistrict(string $subdistrict): AddressMatchInterface
     {
         return $this->setData(self::SUBDISTRICT, $subdistrict);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSubdistrictEn(): string
+    {
+        return (string)$this->getData(self::SUBDISTRICT_EN);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSubdistrictEn(string $value): AddressMatchInterface
+    {
+        return $this->setData(self::SUBDISTRICT_EN, $value);
     }
 
     /**

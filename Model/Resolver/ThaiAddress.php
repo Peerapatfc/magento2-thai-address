@@ -37,8 +37,12 @@ class ThaiAddress implements ResolverInterface
                 'province_code' => $match->getProvinceCode(),
                 'province_name_th' => $match->getProvinceNameTh(),
                 'province_name_en' => $match->getProvinceNameEn(),
+                'district_code' => $match->getDistrictCode(),
                 'district' => $match->getDistrict(),
+                'district_en' => $match->getDistrictEn(),
+                'subdistrict_code' => $match->getSubdistrictCode(),
                 'subdistrict' => $match->getSubdistrict(),
+                'subdistrict_en' => $match->getSubdistrictEn(),
                 'region_id' => $match->getRegionId(),
             ],
             $matches

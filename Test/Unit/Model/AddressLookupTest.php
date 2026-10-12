@@ -43,6 +43,9 @@ class AddressLookupTest extends TestCase
             $this->assertSame(700, $match->getRegionId());
             $this->assertNotSame('', $match->getDistrict());
             $this->assertNotSame('', $match->getSubdistrict());
+            $this->assertNotSame('', $match->getDistrictEn());
+            $this->assertNotSame('', $match->getSubdistrictEn());
+            $this->assertSame($match->getDistrictCode(), intdiv($match->getSubdistrictCode(), 100));
         }
     }
 

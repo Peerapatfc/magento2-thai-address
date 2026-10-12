@@ -10,7 +10,7 @@ use Magento\Framework\Filesystem\Driver\File;
 use Magento\Framework\Serialize\Serializer\Json;
 
 /**
- * Thai provinces, districts and sub-districts keyed by postal code.
+ * Thai provinces, districts and sub-districts keyed by postal code, with their official codes.
  *
  * The data is read once per request from data/thai-addresses.json. See THIRD_PARTY_LICENSES.md for its source.
  */
@@ -21,7 +21,10 @@ class Dataset
     /** @var array<string, array{th: string, en: string}>|null province code => names */
     private ?array $provinces = null;
 
-    /** @var array<string, list<array{province_code: int, district: string, subdistrict: string}>>|null */
+    /** @var array<int, array{th: string, en: string}>|null district code => names */
+    private ?array $districts = null;
+
+    /** @var array<string, list<array<string, int|string>>>|null */
     private ?array $byPostcode = null;
 
     /**
@@ -53,8 +56,11 @@ class Dataset
     /**
      * The sub-districts that use a postal code, or an empty list when the code does not exist.
      *
+     * Each row has province_code, district_code, district, district_en, subdistrict_code, subdistrict and
+     * subdistrict_en. The names without a suffix are Thai.
+     *
      * @param string $postcode
-     * @return list<array{province_code: int, district: string, subdistrict: string}>
+     * @return list<array<string, int|string>>
      */
     public function findByPostcode(string $postcode): array
     {
@@ -92,12 +98,23 @@ class Dataset
             $this->provinces[(int)$code] = $names;
         }
 
+        $this->districts = [];
+        foreach ($data['districts'] as $code => $names) {
+            $this->districts[(int)$code] = $names;
+        }
+
         $this->byPostcode = [];
-        foreach ($data['entries'] as [$postcode, $provinceCode, $district, $subdistrict]) {
+        foreach ($data['entries'] as [$postcode, $subdistrictCode, $subdistrictTh, $subdistrictEn]) {
+            $districtCode = intdiv((int)$subdistrictCode, 100);
+            $district = $this->districts[$districtCode];
             $this->byPostcode[(string)$postcode][] = [
-                'province_code' => (int)$provinceCode,
-                'district' => $district,
-                'subdistrict' => $subdistrict,
+                'province_code' => intdiv($districtCode, 100),
+                'district_code' => $districtCode,
+                'district' => $district['th'],
+                'district_en' => $district['en'],
+                'subdistrict_code' => (int)$subdistrictCode,
+                'subdistrict' => $subdistrictTh,
+                'subdistrict_en' => $subdistrictEn,
             ];
         }
     }
