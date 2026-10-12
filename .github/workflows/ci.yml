@@ -19,7 +19,6 @@ jobs:
             php: "8.3"
     env:
       MAGENTO_VERSION: ${{ matrix.magento }}
-      MAGENTO_DIR: ${{ runner.temp }}/magento
     steps:
       - uses: actions/checkout@v4
 
@@ -35,7 +34,7 @@ jobs:
         run: |
           composer create-project --no-interaction --no-progress \
             --repository-url=https://mirror.mage-os.org/ \
-            "magento/project-community-edition:$MAGENTO_VERSION" "$MAGENTO_DIR"
+            "magento/project-community-edition:$MAGENTO_VERSION" "$RUNNER_TEMP/magento"
 
       - name: Add the module
         working-directory: ${{ runner.temp }}/magento
