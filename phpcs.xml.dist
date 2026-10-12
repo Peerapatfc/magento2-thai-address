@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="Peerapatfc_ThaiAddress" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd">
+    <description>Magento 2 coding standard for the module's PHP code (the tests are not held to it).</description>
+    <rule ref="Magento2"/>
+    <arg name="extensions" value="php"/>
+    <arg name="severity" value="1"/>
+    <file>.</file>
+    <!-- Relative to this file, so it still works when the module is installed under vendor/. -->
+    <exclude-pattern>*.xml</exclude-pattern>
+    <exclude-pattern type="relative">^Test/</exclude-pattern>
+    <exclude-pattern type="relative">^dev/</exclude-pattern>
+    <exclude-pattern type="relative">^data/</exclude-pattern>
+    <exclude-pattern type="relative">^vendor/</exclude-pattern>
+</ruleset>

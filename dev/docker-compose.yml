@@ -1,0 +1,39 @@
+# Local Magento to develop and test the module against. Nothing here ships with the module.
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: magento
+    command: --max_allowed_packet=64M --innodb_buffer_pool_size=512M
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      retries: 30
+
+  search:
+    image: opensearchproject/opensearch:2.19.0
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+      OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200 >/dev/null"]
+      interval: 5s
+      retries: 40
+
+  php:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+      search: { condition: service_healthy }
+    volumes:
+      - magento:/var/www/html
+      - ..:/module:ro
+    ports:
+      - "8081:8081"
+    command: sleep infinity
+
+volumes:
+  magento:

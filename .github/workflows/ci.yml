@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - magento: 2.4.8-p4
+            php: "8.3"
+    env:
+      MAGENTO_VERSION: ${{ matrix.magento }}
+      MAGENTO_DIR: ${{ runner.temp }}/magento
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: bcmath, ctype, curl, dom, gd, hash, iconv, intl, mbstring, openssl, pdo_mysql, simplexml, soap, sockets, sodium, xsl, zip
+          ini-values: memory_limit=-1
+          tools: composer:v2
+
+      # Magento Open Source from the public Mage-OS mirror, so no Adobe keys are needed.
+      - name: Create a Magento project
+        run: |
+          composer create-project --no-interaction --no-progress \
+            --repository-url=https://mirror.mage-os.org/ \
+            "magento/project-community-edition:$MAGENTO_VERSION" "$MAGENTO_DIR"
+
+      - name: Add the module
+        working-directory: ${{ runner.temp }}/magento
+        run: |
+          composer config repositories.thai-address "{\"type\":\"path\",\"url\":\"$GITHUB_WORKSPACE\",\"options\":{\"symlink\":false}}"
+          composer require --no-interaction --no-progress peerapatfc/magento2-thai-address:@dev
+          bin/magento module:enable Peerapatfc_ThaiAddress
+
+      - name: Unit tests
+        working-directory: ${{ runner.temp }}/magento
+        run: vendor/bin/phpunit -c dev/tests/unit/phpunit.xml.dist vendor/peerapatfc/magento2-thai-address/Test/Unit
+
+      - name: Coding standard
+        working-directory: ${{ runner.temp }}/magento
+        run: vendor/bin/phpcs --standard=vendor/peerapatfc/magento2-thai-address/phpcs.xml.dist vendor/peerapatfc/magento2-thai-address
+
+      - name: Dependency injection compiles
+        working-directory: ${{ runner.temp }}/magento
+        run: bin/magento setup:di:compile
