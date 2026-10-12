@@ -27,6 +27,9 @@ class Dataset
     /** @var array<string, list<array<string, int|string>>>|null */
     private ?array $byPostcode = null;
 
+    /** @var array<int, list<array<string, int|string>>>|null district code => sub-districts */
+    private ?array $byDistrict = null;
+
     /**
      * @param Json $json
      * @param File $file
@@ -51,6 +54,47 @@ class Dataset
         $this->load();
 
         return $this->provinces;
+    }
+
+    /**
+     * The districts of a province, in the order of the official codes.
+     *
+     * @param int $provinceCode
+     * @return list<array{code: int, th: string, en: string}>
+     */
+    public function getDistricts(int $provinceCode): array
+    {
+        $this->load();
+
+        $districts = [];
+        foreach ($this->districts as $code => $names) {
+            if (intdiv($code, 100) === $provinceCode) {
+                $districts[] = ['code' => $code, 'th' => $names['th'], 'en' => $names['en']];
+            }
+        }
+
+        return $districts;
+    }
+
+    /**
+     * The sub-districts of a district, in the order of the official codes, each with its postal code.
+     *
+     * @param int $districtCode
+     * @return list<array{code: int, th: string, en: string, postcode: string}>
+     */
+    public function getSubdistricts(int $districtCode): array
+    {
+        $this->load();
+
+        return array_map(
+            static fn (array $row): array => [
+                'code' => $row['subdistrict_code'],
+                'th' => $row['subdistrict'],
+                'en' => $row['subdistrict_en'],
+                'postcode' => $row['postcode'],
+            ],
+            $this->byDistrict[$districtCode] ?? []
+        );
     }
 
     /**
@@ -104,10 +148,11 @@ class Dataset
         }
 
         $this->byPostcode = [];
+        $this->byDistrict = [];
         foreach ($data['entries'] as [$postcode, $subdistrictCode, $subdistrictTh, $subdistrictEn]) {
             $districtCode = intdiv((int)$subdistrictCode, 100);
             $district = $this->districts[$districtCode];
-            $this->byPostcode[(string)$postcode][] = [
+            $row = [
                 'province_code' => intdiv($districtCode, 100),
                 'district_code' => $districtCode,
                 'district' => $district['th'],
@@ -116,6 +161,8 @@ class Dataset
                 'subdistrict' => $subdistrictTh,
                 'subdistrict_en' => $subdistrictEn,
             ];
+            $this->byPostcode[(string)$postcode][] = $row;
+            $this->byDistrict[$districtCode][] = $row + ['postcode' => (string)$postcode];
         }
     }
 }

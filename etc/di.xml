@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="Peerapatfc\ThaiAddress\Api\AddressLookupInterface" type="Peerapatfc\ThaiAddress\Model\AddressLookup"/>
+    <preference for="Peerapatfc\ThaiAddress\Api\AreaListInterface" type="Peerapatfc\ThaiAddress\Model\AreaList"/>
+    <preference for="Peerapatfc\ThaiAddress\Api\Data\AreaInterface" type="Peerapatfc\ThaiAddress\Model\Area"/>
     <preference for="Peerapatfc\ThaiAddress\Api\Data\AddressMatchInterface" type="Peerapatfc\ThaiAddress\Model\AddressMatch"/>
 
     <type name="Magento\Checkout\Api\ShippingInformationManagementInterface">

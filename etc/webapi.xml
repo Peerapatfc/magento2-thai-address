@@ -6,4 +6,22 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/thai-address/provinces" method="GET">
+        <service class="Peerapatfc\ThaiAddress\Api\AreaListInterface" method="getProvinces"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/thai-address/provinces/:provinceCode/districts" method="GET">
+        <service class="Peerapatfc\ThaiAddress\Api\AreaListInterface" method="getDistricts"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/thai-address/districts/:districtCode/subdistricts" method="GET">
+        <service class="Peerapatfc\ThaiAddress\Api\AreaListInterface" method="getSubdistricts"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>
