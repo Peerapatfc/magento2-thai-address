@@ -18,7 +18,8 @@ the province into a free text box and nothing checks it. This module fixes that.
   sub-district, postal code. Choosing a province lists its districts, choosing a district lists its sub-districts (in
   Thai alphabetical order) and choosing a sub-district fills the postal code. Typing the postal code first still
   works: it selects the province and fills the district and sub-district when only one fits. Other countries keep the
-  normal text fields. **The sub-district is stored in the second street line, so the store needs at least 2 street
+  normal text fields. The My Account address form (add and edit) gets the same drop-downs, with the existing
+  address pre-selected in either language. **The sub-district is stored in the second street line, so the store needs at least 2 street
   lines** (Stores > Configuration > Customers > Customer Configuration > Name and Address Options > Number of Lines in a
   Street Address, default 2). With 1 line only the district is a drop-down and the sub-district is not asked for or
   checked. The names are in **one language at a time**: Thai in a store view with a Thai locale (`th_TH`),
@@ -151,7 +152,6 @@ same as before.
   street line (which is hidden for Thailand) and its choice is stored there, as text, so the address book and orders
   show the Thai name, not a code.
 - The province list is Magento's own region field, ordered by Magento, not in Thai alphabetical order.
-- The My Account address form has no drop-downs (only a check when you save).
 - The address book is checked only on the storefront; the admin and the API can still save an address the checkout
   would refuse.
 - District and sub-district are not separate address fields (see above), so they are not in GraphQL address types or
@@ -188,13 +188,16 @@ node scripts/build-addresses.mjs geography.json <upstream-commit-sha>
 bash dev/install.sh
 ```
 
+The module is copied into Magento's `vendor/` (Magento will not render templates from a symlinked module), so after
+changing it run `bash dev/sync.sh`.
+
 A test customer with two saved Thai addresses (for trying the logged-in checkout and the address book) comes from
 `bash dev/seed-customer.sh`. It is for the local store only; the login is in the script.
 
 Then:
 
 ```bash
-# unit tests (87)
+# unit tests (89)
 docker compose -f dev/docker-compose.yml exec -T php bash -lc \
   'cd /var/www/html/dev/tests/unit && ../../../vendor/bin/phpunit -c phpunit.xml.dist /module/Test/Unit'
 

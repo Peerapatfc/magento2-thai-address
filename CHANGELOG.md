@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 - 2026-10-12
+
+- The My Account address form (add and edit) gets the same drop-downs as the checkout for Thailand: district,
+  sub-district written into the second street line, the postal code filled from the sub-district, and the postal code
+  filling the province, district and sub-district. A saved address is pre-selected in either language.
+- `dev/sync.sh`; `dev/install.sh` now copies the module into `vendor/` instead of symlinking it, because Magento
+  refuses to render templates from outside `vendor/` and `app/`.
+- 89 unit tests.
+
 ## 0.4.0 - 2026-10-12
 
 - A saved address that the checkout would refuse is flagged in the checkout (the reason, a link to edit it in My Account,

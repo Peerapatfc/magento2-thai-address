@@ -28,8 +28,9 @@ if ! run "test -f app/etc/env.php"; then
 fi
 
 run "git config --global --add safe.directory /module"
-run "composer config repositories.thai-address '{\"type\":\"path\",\"url\":\"/module\",\"options\":{\"symlink\":true}}'"
+run "composer config repositories.thai-address '{\"type\":\"path\",\"url\":\"/module\",\"options\":{\"symlink\":false}}'"
 run "composer require --no-interaction --no-progress peerapatfc/magento2-thai-address:@dev"
+echo "The module is copied into vendor/. After changing it, run: bash dev/sync.sh"
 run "php -d memory_limit=-1 bin/magento module:enable Peerapatfc_ThaiAddress"
 run "php -d memory_limit=-1 bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth Magento_TwoFactorAuth"
 run "php -d memory_limit=-1 bin/magento setup:upgrade"
