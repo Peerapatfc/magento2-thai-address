@@ -10,4 +10,7 @@
     <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
         <plugin name="peerapatfc_thai_address_fields" type="Peerapatfc\ThaiAddress\Plugin\Checkout\ThaiAddressFields"/>
     </type>
+    <type name="Magento\Customer\Api\AddressRepositoryInterface">
+        <plugin name="peerapatfc_thai_address_address_book" type="Peerapatfc\ThaiAddress\Plugin\Customer\ValidateAddressBook"/>
+    </type>
 </config>

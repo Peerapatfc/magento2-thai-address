@@ -9,9 +9,7 @@ use Magento\Checkout\Api\GuestShippingInformationManagementInterface;
 use Magento\Checkout\Api\ShippingInformationManagementInterface;
 use Magento\Framework\Exception\InputException;
 use Magento\Quote\Api\Data\AddressInterface;
-use Peerapatfc\ThaiAddress\Model\AddressValidator;
-use Peerapatfc\ThaiAddress\Model\Config;
-use Peerapatfc\ThaiAddress\Model\Dataset;
+use Peerapatfc\ThaiAddress\Model\AddressChecker;
 
 /**
  * Rejects a Thai shipping or billing address with an unknown postal code or a province that does not
@@ -20,13 +18,10 @@ use Peerapatfc\ThaiAddress\Model\Dataset;
 class ValidateThaiAddress
 {
     /**
-     * @param AddressValidator $validator
-     * @param Config $config
+     * @param AddressChecker $checker
      */
-    public function __construct(
-        private readonly AddressValidator $validator,
-        private readonly Config $config
-    ) {
+    public function __construct(private readonly AddressChecker $checker)
+    {
     }
 
     /**
@@ -57,21 +52,17 @@ class ValidateThaiAddress
      */
     private function assertValid(?AddressInterface $address): void
     {
-        if ($address === null || $address->getCountryId() !== Dataset::COUNTRY_ID) {
-            return;
-        }
-        if (!$this->config->isValidationEnabled()) {
+        if ($address === null) {
             return;
         }
 
-        $error = $this->validator->validate(
+        $error = $this->checker->check(
+            $address->getCountryId(),
             $address->getPostcode(),
             $address->getRegionId(),
             $address->getRegion(),
             $address->getCity(),
-            // The sub-district lives in the second street line, which only exists with 2 or more street lines;
-            // a store with one line can still receive a leftover second line from a saved address.
-            $this->config->getStreetLines() >= 2 ? ($address->getStreet()[1] ?? null) : null
+            $address->getStreet() ?? []
         );
         if ($error !== null) {
             throw new InputException($error);

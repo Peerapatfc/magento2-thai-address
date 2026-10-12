@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 - 2026-10-12
+
+- A saved address that the checkout would refuse is flagged in the checkout (the reason, a link to edit it in My Account,
+  no "Ship Here" button) instead of failing only when the customer continues.
+- The storefront address book (My Account) applies the same validation when a Thai address is saved, so a customer
+  cannot save one the checkout would refuse. The admin and the API are not affected.
+- One `AddressChecker` now serves the checkout, the address book and the list of flagged addresses.
+- 87 unit tests.
+
 ## 0.3.2 - 2026-10-12
 
 - With one street line there is no second line to hold the sub-district: the sub-district drop-down is no longer

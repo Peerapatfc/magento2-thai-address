@@ -24,6 +24,9 @@ the province into a free text box and nothing checks it. This module fixes that.
   checked. The names are in **one language at a time**: Thai in a store view with a Thai locale (`th_TH`),
   English in any other, each sorted in its own alphabet. The stored value is the name shown, and the checkout
   validation accepts both the Thai and the English name.
+- **Saved addresses are checked too.** The storefront address book (My Account) refuses to save a Thai address the
+  checkout would refuse, with the same message. In the checkout a saved address that fails the check shows the reason
+  and a link to edit it in My Account, and has no "Ship Here" button.
 - **Admin settings** for the strictness level and the autocomplete (Stores > Configuration > General > Thai Address).
 - Thai translations of the messages.
 
@@ -148,7 +151,9 @@ same as before.
   street line (which is hidden for Thailand) and its choice is stored there, as text, so the address book and orders
   show the Thai name, not a code.
 - The province list is Magento's own region field, ordered by Magento, not in Thai alphabetical order.
-- The customer address book (My Account) is not validated, only checkout.
+- The My Account address form has no drop-downs (only a check when you save).
+- The address book is checked only on the storefront; the admin and the API can still save an address the checkout
+  would refuse.
 - District and sub-district are not separate address fields (see above), so they are not in GraphQL address types or
   the admin address form.
 - The Luma drop-downs were checked in a browser against a real checkout (guest checkout up to the payment step), but
@@ -189,7 +194,7 @@ A test customer with two saved Thai addresses (for trying the logged-in checkout
 Then:
 
 ```bash
-# unit tests (77)
+# unit tests (87)
 docker compose -f dev/docker-compose.yml exec -T php bash -lc \
   'cd /var/www/html/dev/tests/unit && ../../../vendor/bin/phpunit -c phpunit.xml.dist /module/Test/Unit'
 

@@ -10,24 +10,18 @@ use Magento\Framework\Exception\InputException;
 use Magento\Quote\Api\Data\AddressInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Peerapatfc\ThaiAddress\Model\AddressValidator;
-use Peerapatfc\ThaiAddress\Model\Config;
+use Peerapatfc\ThaiAddress\Model\AddressChecker;
 use Peerapatfc\ThaiAddress\Plugin\ValidateThaiAddress;
 
 class ValidateThaiAddressTest extends TestCase
 {
-    private AddressValidator&MockObject $validator;
-    private Config&MockObject $config;
-    private int $streetLines = 2;
+    private AddressChecker&MockObject $checker;
     private ValidateThaiAddress $plugin;
 
     protected function setUp(): void
     {
-        $this->validator = $this->createMock(AddressValidator::class);
-        $this->config = $this->createMock(Config::class);
-        $this->config->method('isValidationEnabled')->willReturn(true);
-        $this->config->method('getStreetLines')->willReturn($this->streetLines);
-        $this->plugin = new ValidateThaiAddress($this->validator, $this->config);
+        $this->checker = $this->createMock(AddressChecker::class);
+        $this->plugin = new ValidateThaiAddress($this->checker);
     }
 
     private function address(string $country, string $postcode = '10110'): AddressInterface&MockObject
@@ -52,9 +46,10 @@ class ValidateThaiAddressTest extends TestCase
         return $info;
     }
 
-    public function testAValidThaiAddressPasses(): void
+    public function testTheAddressIsHandedToTheChecker(): void
     {
-        $this->validator->expects($this->once())->method('validate')->with('10110', 700, 'Bangkok', 'คลองเตย', 'คลองเตย')->willReturn(null);
+        $this->checker->expects($this->once())->method('check')
+            ->with('TH', '10110', 700, 'Bangkok', 'คลองเตย', ['1 Rama IV Rd', 'คลองเตย'])->willReturn(null);
 
         $result = $this->plugin->beforeSaveAddressInformation(
             $this->createMock(ShippingInformationManagementInterface::class),
@@ -65,23 +60,9 @@ class ValidateThaiAddressTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testWithOneStreetLineALeftoverSecondLineIsNotChecked(): void
+    public function testARejectedAddressStopsTheCheckoutWithTheReason(): void
     {
-        $this->streetLines = 1;
-        $this->setUp();
-        $this->validator->expects($this->once())->method('validate')
-            ->with('10110', 700, 'Bangkok', 'คลองเตย', null)->willReturn(null);
-
-        $this->plugin->beforeSaveAddressInformation(
-            $this->createMock(ShippingInformationManagementInterface::class),
-            '1',
-            $this->information($this->address('TH'))
-        );
-    }
-
-    public function testARejectedThaiAddressStopsTheCheckoutWithTheReason(): void
-    {
-        $this->validator->method('validate')->willReturn(__('Postal code %1 does not exist in Thailand.', '00000'));
+        $this->checker->method('check')->willReturn(__('Postal code %1 does not exist in Thailand.', '00000'));
 
         $this->expectException(InputException::class);
         $this->expectExceptionMessage('Postal code 00000 does not exist in Thailand.');
@@ -93,20 +74,9 @@ class ValidateThaiAddressTest extends TestCase
         );
     }
 
-    public function testAddressesOutsideThailandAreNotChecked(): void
-    {
-        $this->validator->expects($this->never())->method('validate');
-
-        $this->plugin->beforeSaveAddressInformation(
-            $this->createMock(ShippingInformationManagementInterface::class),
-            '1',
-            $this->information($this->address('US', '90210'), $this->address('SG', '018956'))
-        );
-    }
-
     public function testTheBillingAddressIsCheckedToo(): void
     {
-        $this->validator->expects($this->exactly(2))->method('validate')->willReturn(null);
+        $this->checker->expects($this->exactly(2))->method('check')->willReturn(null);
 
         $this->plugin->beforeSaveAddressInformation(
             $this->createMock(ShippingInformationManagementInterface::class),
@@ -115,17 +85,14 @@ class ValidateThaiAddressTest extends TestCase
         );
     }
 
-    public function testNothingIsCheckedWhenValidationIsSwitchedOff(): void
+    public function testAMissingBillingAddressIsSkipped(): void
     {
-        $config = $this->createMock(Config::class);
-        $config->method('isValidationEnabled')->willReturn(false);
-        $this->validator->expects($this->never())->method('validate');
-        $plugin = new ValidateThaiAddress($this->validator, $config);
+        $this->checker->expects($this->once())->method('check')->willReturn(null);
 
-        $plugin->beforeSaveAddressInformation(
+        $this->plugin->beforeSaveAddressInformation(
             $this->createMock(ShippingInformationManagementInterface::class),
             '1',
-            $this->information($this->address('TH', '00000'))
+            $this->information($this->address('TH'), null)
         );
     }
 }
