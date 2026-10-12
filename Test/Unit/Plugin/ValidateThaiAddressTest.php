@@ -35,6 +35,8 @@ class ValidateThaiAddressTest extends TestCase
         $address->method('getPostcode')->willReturn($postcode);
         $address->method('getRegionId')->willReturn(700);
         $address->method('getRegion')->willReturn('Bangkok');
+        $address->method('getCity')->willReturn('คลองเตย');
+        $address->method('getStreet')->willReturn(['1 Rama IV Rd', 'คลองเตย']);
 
         return $address;
     }
@@ -50,7 +52,7 @@ class ValidateThaiAddressTest extends TestCase
 
     public function testAValidThaiAddressPasses(): void
     {
-        $this->validator->expects($this->once())->method('validate')->with('10110', 700, 'Bangkok')->willReturn(null);
+        $this->validator->expects($this->once())->method('validate')->with('10110', 700, 'Bangkok', 'คลองเตย', 'คลองเตย')->willReturn(null);
 
         $result = $this->plugin->beforeSaveAddressInformation(
             $this->createMock(ShippingInformationManagementInterface::class),

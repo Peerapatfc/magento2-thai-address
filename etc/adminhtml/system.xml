@@ -12,13 +12,21 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Rejects a shipping or billing address in Thailand whose postal code does not exist.</comment>
                 </field>
-                <field id="enforce_province_match" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Province must match the postal code</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Also rejects an address whose province is not one of the provinces that use the postal code.</comment>
+                <field id="level" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Strictness</label>
+                    <source_model>Peerapatfc\ThaiAddress\Model\Config\Source\ValidationLevel</source_model>
+                    <comment>District is compared with the City field and sub-district with the second street line. Names are matched ignoring "เขต/อำเภอ/แขวง/ตำบล", tone marks and spaces. An empty field is not checked.</comment>
                     <depends>
                         <field id="enabled">1</field>
                     </depends>
+                </field>
+            </group>
+            <group id="autocomplete" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Checkout autocomplete</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Suggest the address from the postal code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Luma checkout. Fills the province and, when only one fits, the district and sub-district, and suggests the others.</comment>
                 </field>
             </group>
         </section>

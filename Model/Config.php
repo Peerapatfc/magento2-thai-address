@@ -10,7 +10,12 @@ use Magento\Store\Model\ScopeInterface;
 class Config
 {
     private const XML_PATH_ENABLED = 'thai_address/validation/enabled';
-    private const XML_PATH_ENFORCE_PROVINCE = 'thai_address/validation/enforce_province_match';
+    private const XML_PATH_AUTOCOMPLETE = 'thai_address/autocomplete/enabled';
+    private const XML_PATH_LEVEL = 'thai_address/validation/level';
+
+    public const LEVEL_POSTCODE = 'postcode';
+    public const LEVEL_PROVINCE = 'province';
+    public const LEVEL_ADDRESS = 'address';
 
     /**
      * @param ScopeConfigInterface $scopeConfig
@@ -31,13 +36,28 @@ class Config
     }
 
     /**
-     * Whether the chosen province must agree with the postal code (otherwise only the postal code is checked).
+     * How strictly a Thai address is checked: one of the LEVEL_* constants.
+     *
+     * @param int|string|null $storeId
+     * @return string
+     */
+    public function getValidationLevel(int|string|null $storeId = null): string
+    {
+        $level = (string)$this->scopeConfig->getValue(self::XML_PATH_LEVEL, ScopeInterface::SCOPE_STORE, $storeId);
+
+        return in_array($level, [self::LEVEL_POSTCODE, self::LEVEL_PROVINCE, self::LEVEL_ADDRESS], true)
+            ? $level
+            : self::LEVEL_PROVINCE;
+    }
+
+    /**
+     * Whether the checkout suggests province, district and sub-district from the postal code.
      *
      * @param int|string|null $storeId
      * @return bool
      */
-    public function enforceProvinceMatch(int|string|null $storeId = null): bool
+    public function isAutocompleteEnabled(int|string|null $storeId = null): bool
     {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_ENFORCE_PROVINCE, ScopeInterface::SCOPE_STORE, $storeId);
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_AUTOCOMPLETE, ScopeInterface::SCOPE_STORE, $storeId);
     }
 }

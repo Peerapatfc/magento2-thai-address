@@ -67,7 +67,9 @@ class ValidateThaiAddress
         $error = $this->validator->validate(
             $address->getPostcode(),
             $address->getRegionId(),
-            $address->getRegion()
+            $address->getRegion(),
+            $address->getCity(),
+            $address->getStreet()[1] ?? null
         );
         if ($error !== null) {
             throw new InputException($error);

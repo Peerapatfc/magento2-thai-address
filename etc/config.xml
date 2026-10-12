@@ -4,8 +4,11 @@
         <thai_address>
             <validation>
                 <enabled>1</enabled>
-                <enforce_province_match>1</enforce_province_match>
+                <level>province</level>
             </validation>
+            <autocomplete>
+                <enabled>1</enabled>
+            </autocomplete>
         </thai_address>
     </default>
 </config>

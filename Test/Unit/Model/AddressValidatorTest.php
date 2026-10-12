@@ -9,6 +9,7 @@ use Magento\Framework\Serialize\Serializer\Json;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Peerapatfc\ThaiAddress\Model\AddressValidator;
+use Peerapatfc\ThaiAddress\Model\AreaNameMatcher;
 use Peerapatfc\ThaiAddress\Model\Config;
 use Peerapatfc\ThaiAddress\Test\Unit\DatasetFactory;
 use Peerapatfc\ThaiAddress\Model\Dataset;
@@ -27,7 +28,7 @@ class AddressValidatorTest extends TestCase
     protected function setUp(): void
     {
         $this->config = $this->createMock(Config::class);
-        $this->config->method('enforceProvinceMatch')->willReturn(true);
+        $this->config->method('getValidationLevel')->willReturn(Config::LEVEL_PROVINCE);
 
         $this->regions = $this->createMock(RegionResolver::class);
         $this->regions->method('getProvinceCode')->willReturnMap([
@@ -36,7 +37,7 @@ class AddressValidatorTest extends TestCase
         ]);
 
         $dataset = DatasetFactory::create();
-        $this->validator = new AddressValidator($dataset, new ProvinceMatcher($dataset), $this->regions, $this->config);
+        $this->validator = new AddressValidator($dataset, new ProvinceMatcher($dataset), new AreaNameMatcher(), $this->regions, $this->config);
     }
 
     public function testAMatchingRegionIdPasses(): void
@@ -94,14 +95,67 @@ class AddressValidatorTest extends TestCase
         $this->assertNull($this->validator->validate('10110', 0, ''));
     }
 
-    public function testTheProvinceCheckCanBeSwitchedOff(): void
+    public function testThePostcodeLevelOnlyChecksThePostcode(): void
     {
         $config = $this->createMock(Config::class);
-        $config->method('enforceProvinceMatch')->willReturn(false);
+        $config->method('getValidationLevel')->willReturn(Config::LEVEL_POSTCODE);
         $dataset = DatasetFactory::create();
-        $validator = new AddressValidator($dataset, new ProvinceMatcher($dataset), $this->regions, $config);
+        $validator = new AddressValidator($dataset, new ProvinceMatcher($dataset), new AreaNameMatcher(), $this->regions, $config);
 
         $this->assertNull($validator->validate('10110', self::PHUKET_REGION_ID, 'Phuket'));
         $this->assertNotNull($validator->validate('00000', self::PHUKET_REGION_ID, 'Phuket'), 'postcode still checked');
+    }
+
+    private function addressLevelValidator(): AddressValidator
+    {
+        $config = $this->createMock(Config::class);
+        $config->method('getValidationLevel')->willReturn(Config::LEVEL_ADDRESS);
+        $dataset = DatasetFactory::create();
+
+        return new AddressValidator($dataset, new ProvinceMatcher($dataset), new AreaNameMatcher(), $this->regions, $config);
+    }
+
+    public function testTheProvinceLevelIgnoresDistrictAndSubdistrict(): void
+    {
+        $this->assertNull($this->validator->validate('10500', self::BANGKOK_REGION_ID, null, 'Nowhere', 'Nothing'));
+    }
+
+    public function testTheAddressLevelAcceptsTheRightDistrictAndSubdistrict(): void
+    {
+        $validator = $this->addressLevelValidator();
+
+        $this->assertNull($validator->validate('10500', self::BANGKOK_REGION_ID, null, 'บางรัก', 'สีลม'));
+        $this->assertNull($validator->validate('10500', self::BANGKOK_REGION_ID, null, 'เขตบางรัก', 'แขวงสีลม'));
+    }
+
+    public function testTheAddressLevelRejectsAWrongDistrict(): void
+    {
+        $error = $this->addressLevelValidator()->validate('10500', self::BANGKOK_REGION_ID, null, 'ห้วยขวาง', null);
+
+        $this->assertNotNull($error);
+        $this->assertStringContainsString('ห้วยขวาง', (string)$error);
+    }
+
+    public function testTheAddressLevelRejectsASubdistrictOutsideTheDistrict(): void
+    {
+        $this->assertNotNull(
+            $this->addressLevelValidator()->validate('10500', self::BANGKOK_REGION_ID, null, 'บางรัก', 'คลองเตย')
+        );
+    }
+
+    public function testTheAddressLevelSkipsEmptyDistrictAndSubdistrict(): void
+    {
+        $validator = $this->addressLevelValidator();
+
+        $this->assertNull($validator->validate('10500', self::BANGKOK_REGION_ID, null, '', ''));
+        $this->assertNull($validator->validate('10500', self::BANGKOK_REGION_ID, null, null, null));
+        $this->assertNull($validator->validate('10500', self::BANGKOK_REGION_ID, null, 'บางรัก', ''));
+    }
+
+    public function testTheAddressLevelStillRejectsAWrongProvinceFirst(): void
+    {
+        $error = $this->addressLevelValidator()->validate('10500', self::PHUKET_REGION_ID, null, 'บางรัก', 'สีลม');
+
+        $this->assertStringContainsString('กรุงเทพมหานคร', (string)$error);
     }
 }
