@@ -131,7 +131,7 @@ Then:
 ```bash
 # unit tests (41)
 docker compose -f dev/docker-compose.yml exec -T php bash -lc \
-  'cd /var/www/html && vendor/bin/phpunit -c dev/tests/unit/phpunit.xml.dist /module/Test/Unit'
+  'cd /var/www/html/dev/tests/unit && ../../../vendor/bin/phpunit -c phpunit.xml.dist /module/Test/Unit'
 
 # coding standard
 docker compose -f dev/docker-compose.yml exec -T php bash -lc \

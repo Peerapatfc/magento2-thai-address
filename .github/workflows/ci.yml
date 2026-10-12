@@ -43,9 +43,10 @@ jobs:
           composer require --no-interaction --no-progress peerapatfc/magento2-thai-address:@dev
           bin/magento module:enable Peerapatfc_ThaiAddress
 
+      # Run from dev/tests/unit: that is where Magento's Allure config is, and PHPUnit exits 1 on its warning otherwise.
       - name: Unit tests
-        working-directory: ${{ runner.temp }}/magento
-        run: vendor/bin/phpunit -c dev/tests/unit/phpunit.xml.dist vendor/peerapatfc/magento2-thai-address/Test/Unit
+        working-directory: ${{ runner.temp }}/magento/dev/tests/unit
+        run: ../../../vendor/bin/phpunit -c phpunit.xml.dist ../../../vendor/peerapatfc/magento2-thai-address/Test/Unit
 
       - name: Coding standard
         working-directory: ${{ runner.temp }}/magento

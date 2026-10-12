@@ -37,6 +37,6 @@ run "php -d memory_limit=-1 bin/magento setup:di:compile"
 
 echo
 echo "Run the unit tests:"
-echo "  docker compose -f dev/docker-compose.yml exec -T php bash -lc 'cd /var/www/html && vendor/bin/phpunit -c dev/tests/unit/phpunit.xml.dist /module/Test/Unit'"
+echo "  docker compose -f dev/docker-compose.yml exec -T php bash -lc 'cd /var/www/html/dev/tests/unit && ../../../vendor/bin/phpunit -c phpunit.xml.dist /module/Test/Unit'"
 echo "Serve the store on :8081:"
 echo "  docker compose -f dev/docker-compose.yml exec -d php bash -lc 'cd /var/www/html && php -S 0.0.0.0:8081 -t pub/ phpserver/router.php'"
