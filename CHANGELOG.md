@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 - 2026-10-12
+
+- District and sub-district validation: the City field is the district and the second street line the sub-district.
+  Names are matched ignoring เขต/อำเภอ/แขวง/ตำบล, tone marks and spaces.
+- New setting *Strictness* (postal code / + province / + district and sub-district). It replaces *Province must match
+  the postal code*; the default behaves as before.
+- Luma checkout autocomplete from the postal code, with a setting to turn it off.
+- Official district and sub-district codes (`district_code`, `subdistrict_code`) and English names (`district_en`,
+  `subdistrict_en`) in the REST and GraphQL lookup. The data file now records its source and upstream commit.
+- 62 unit tests.
+
 ## 0.1.0
 
 - 77 Thai provinces added as Magento regions for Thailand (English and Thai names), with the official province code
