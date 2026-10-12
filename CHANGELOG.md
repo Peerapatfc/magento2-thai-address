@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 - 2026-10-12
+
+- Luma checkout for Thailand: City becomes a district drop-down and a sub-district drop-down replaces the second
+  street line, in the order country, province, district, sub-district, postal code. The postal code is filled from
+  the sub-district. Other countries are unchanged.
+- REST: `GET /V1/thai-address/provinces`, `/provinces/:provinceCode/districts` and
+  `/districts/:districtCode/subdistricts`, sorted in Thai alphabetical order.
+- Setting "Drop-downs and postal code autocomplete" (was "Suggest the address from the postal code").
+- 67 unit tests.
+
 ## 0.2.0 - 2026-10-12
 
 - District and sub-district validation: the City field is the district and the second street line the sub-district.

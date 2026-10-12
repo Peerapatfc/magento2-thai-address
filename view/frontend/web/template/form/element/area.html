@@ -1,0 +1,33 @@
+<!-- ko if: isThai() -->
+<select class="select" data-bind="
+    options: options,
+    value: value,
+    valueAllowUnset: true,
+    optionsCaption: caption,
+    optionsValue: 'value',
+    optionsText: 'label',
+    hasFocus: focused,
+    attr: {
+        name: inputName,
+        id: uid,
+        disabled: disabled,
+        'aria-describedby': getDescriptionId(),
+        'aria-required': required,
+        'aria-invalid': error() ? true : 'false'
+    }"></select>
+<!-- /ko -->
+<!-- ko ifnot: isThai() -->
+<input class="input-text" type="text" data-bind="
+    value: value,
+    valueUpdate: 'keyup',
+    hasFocus: focused,
+    attr: {
+        name: inputName,
+        placeholder: placeholder,
+        'aria-describedby': getDescriptionId(),
+        'aria-required': required,
+        'aria-invalid': error() ? true : 'false',
+        id: uid,
+        disabled: disabled
+    }">
+<!-- /ko -->

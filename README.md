@@ -14,8 +14,11 @@ the province into a free text box and nothing checks it. This module fixes that.
   Magento `region_id`.
 - **Checkout validation** for Thai shipping and billing addresses, for guests and logged-in customers: the postal code
   must exist, and optionally the province, district and sub-district must agree with it (three strictness levels).
-- **Luma checkout autocomplete**: type the postal code and the province is selected, the district (City field) and
-  sub-district (second street line) are filled when only one fits, and suggested otherwise.
+- **Luma checkout drop-downs** for Thailand, in the order a Thai address is written: country, province, district,
+  sub-district, postal code. Choosing a province lists its districts, choosing a district lists its sub-districts (in
+  Thai alphabetical order) and choosing a sub-district fills the postal code. Typing the postal code first still
+  works: it selects the province and fills the district and sub-district when only one fits. Other countries keep the
+  normal text fields.
 - **Admin settings** for the strictness level and the autocomplete (Stores > Configuration > General > Thai Address).
 - Thai translations of the messages.
 
@@ -60,6 +63,17 @@ curl https://your-store.example/rest/V1/thai-address/postcode/10110
 ```
 
 A code that does not exist returns `[]`. A malformed one returns HTTP 400.
+
+### Lists for drop-downs
+
+```bash
+curl https://your-store.example/rest/V1/thai-address/provinces                      # 77, with region_id
+curl https://your-store.example/rest/V1/thai-address/provinces/10/districts         # districts of Bangkok
+curl https://your-store.example/rest/V1/thai-address/districts/1004/subdistricts    # with postcode
+```
+
+Each item has `code`, `name_th` and `name_en`; sub-districts also have `postcode`, provinces `region_id`. They are
+sorted in Thai alphabetical order.
 
 ### GraphQL
 
@@ -118,19 +132,22 @@ Stores > Configuration > General > Thai Address
 |---|---|---|
 | Validate Thai addresses | Yes | Rejects a Thai address whose postal code does not exist. |
 | Strictness | Postal code and province | *Postal code must exist*, *Postal code and province must match*, or *Postal code, province, district and sub-district must match*. |
-| Suggest the address from the postal code | Yes | Luma checkout autocomplete. |
+| Drop-downs and postal code autocomplete | Yes | Luma checkout: district and sub-district drop-downs and the postal code autocomplete. |
 
 The old setting "Province must match the postal code" (0.1.0) is replaced by *Strictness*; the default behaves the
 same as before.
 
 ## What it does not do yet
 
-- **Autocomplete is Luma only.** Hyvä is not done. It fills the form when the postal code is complete, not while
-  typing the district; the suggestions are the browser's native `<datalist>`.
+- **The drop-downs are Luma only.** Hyvä is not done. The sub-district drop-down is shown in place of the second
+  street line (which is hidden for Thailand) and its choice is stored there, as text, so the address book and orders
+  show the Thai name, not a code.
+- The province list is Magento's own region field, ordered by Magento, not in Thai alphabetical order.
 - The customer address book (My Account) is not validated, only checkout.
 - District and sub-district are not separate address fields (see above), so they are not in GraphQL address types or
   the admin address form.
-- The Luma autocomplete was checked in a browser against a real checkout, but has no automated JavaScript tests.
+- The Luma drop-downs were checked in a browser against a real checkout (guest checkout up to the payment step), but
+  have no automated JavaScript tests.
 - Tested on Magento Open Source **2.4.8-p4 with PHP 8.3**. 2.4.9 and Adobe Commerce are not tested.
 
 ## Data
@@ -164,7 +181,7 @@ bash dev/install.sh
 Then:
 
 ```bash
-# unit tests (62)
+# unit tests (67)
 docker compose -f dev/docker-compose.yml exec -T php bash -lc \
   'cd /var/www/html/dev/tests/unit && ../../../vendor/bin/phpunit -c phpunit.xml.dist /module/Test/Unit'
 

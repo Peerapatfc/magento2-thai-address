@@ -139,6 +139,7 @@ define([
              */
             apply: function (matches) {
                 var self = this,
+                    subdistrict = registry.get(this.parentName + '.thai_subdistrict'),
                     regionIds = _.uniq(_.compact(_.pluck(matches, 'region_id'))),
                     districts = _.uniq(_.pluck(matches, 'district'));
 
@@ -150,6 +151,12 @@ define([
                     registry.get(this.parentName + '.region_id', function (region) {
                         region.value(String(regionIds[0]));
                     });
+                }
+
+                if (subdistrict && subdistrict.isThaiCountry()) {
+                    this.applyToDropdowns(matches, subdistrict);
+
+                    return;
                 }
 
                 this.withSiblings(function (city, street) {
@@ -173,6 +180,35 @@ define([
 
                     suggestions.set(city.uid, districts);
                     suggestions.set(street.uid, subdistricts);
+                });
+            },
+
+            /**
+             * With the drop-downs on, only choose what the postal code settles; the options come from the
+             * drop-downs themselves.
+             *
+             * @param {Array<Object>} matches
+             * @param {Object} subdistrict The sub-district drop-down
+             */
+            applyToDropdowns: function (matches, subdistrict) {
+                var districts = _.uniq(_.pluck(matches, 'district'));
+
+                registry.get(this.parentName + '.city', function (city) {
+                    var chosen = _.find(districts, function (district) {
+                            return normalize(district) === normalize(city.value());
+                        }) || (districts.length === 1 ? districts[0] : null),
+                        names;
+
+                    if (!chosen) {
+                        return;
+                    }
+
+                    city.value(chosen);
+                    names = _.uniq(_.pluck(_.where(matches, {district: chosen}), 'subdistrict'));
+
+                    if (names.length === 1) {
+                        subdistrict.value(names[0]);
+                    }
                 });
             }
         });

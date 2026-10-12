@@ -24,9 +24,9 @@
             <group id="autocomplete" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Checkout autocomplete</label>
                 <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Suggest the address from the postal code</label>
+                    <label>Drop-downs and postal code autocomplete</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Luma checkout. Fills the province and, when only one fits, the district and sub-district, and suggests the others.</comment>
+                    <comment>Luma checkout. For Thailand, City becomes a district drop-down and a sub-district drop-down is added (the second street line is hidden). The postal code fills the province, district and sub-district.</comment>
                 </field>
             </group>
         </section>
