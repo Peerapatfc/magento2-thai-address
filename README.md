@@ -149,7 +149,11 @@ exist".
 
 ## What it does not do yet
 
-- **The drop-downs are Luma only.** Hyvä is not done. The sub-district drop-down is shown in place of the second
+- **The drop-downs are Luma only.** On Hyvä (tested with the default theme and the free Luma Fallback Checkout), the
+  checkout drop-downs, the postal-code fill and the saved-address warning work, because that checkout is the Luma
+  one. The My Account address form is Hyvä's own template, so it keeps plain text fields there; the address is still
+  checked on save. Hyvä Checkout (the paid one) is not tested and the drop-downs are not built for it.
+  The sub-district drop-down is shown in place of the second
   street line (which is hidden for Thailand) and its choice is stored there, as text, so the address book and orders
   show the Thai name, not a code.
 - The province list is Magento's own region field, ordered by Magento, not in Thai alphabetical order.
