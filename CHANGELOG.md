@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 - 2026-10-14
+
+- Upgrading from 0.1.0 keeps the store's choice: the old setting "Province must match the postal code" is carried over
+  to "Strictness" (Yes: postal code and province, No: postal code only) at every scope where it was saved. Before,
+  a store that had switched the province check off was silently made stricter.
+- 92 unit tests.
+
 ## 0.5.0 - 2026-10-12
 
 - The My Account address form (add and edit) gets the same drop-downs as the checkout for Thailand: district,

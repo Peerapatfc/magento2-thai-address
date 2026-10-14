@@ -143,8 +143,9 @@ Stores > Configuration > General > Thai Address
 | Strictness | Postal code and province | *Postal code must exist*, *Postal code and province must match*, or *Postal code, province, district and sub-district must match*. |
 | Drop-downs and postal code autocomplete | Yes | Luma checkout: district and sub-district drop-downs and the postal code autocomplete. |
 
-The old setting "Province must match the postal code" (0.1.0) is replaced by *Strictness*; the default behaves the
-same as before.
+The old setting "Province must match the postal code" (0.1.0) is replaced by *Strictness*. Upgrading carries it over
+at every scope where it was saved: Yes becomes "Postal code and province must match", No becomes "Postal code must
+exist".
 
 ## What it does not do yet
 
@@ -197,7 +198,7 @@ A test customer with two saved Thai addresses (for trying the logged-in checkout
 Then:
 
 ```bash
-# unit tests (89)
+# unit tests (92)
 docker compose -f dev/docker-compose.yml exec -T php bash -lc \
   'cd /var/www/html/dev/tests/unit && ../../../vendor/bin/phpunit -c phpunit.xml.dist /module/Test/Unit'
 
